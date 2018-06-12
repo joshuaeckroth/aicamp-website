@@ -250,8 +250,13 @@ const int BIN2 = 9;           //control pin 2 on the motor driver for the left m
 const int BIN1 = 8;           //control pin 1 on the motor driver for the left motor
 
 int photoresistor = 0;
-int max_light = 0;
 
+int angle = 0;
+int delta = 0;
+int k;
+const int MOTOR_SLOW_LEFT = 255;
+const int MOTOR_SLOW_RIGHT = 255;
+const int MOTOR_ANGLE_DELAY = 80;
 
 //distance variables
 const int trigPin = 3;
@@ -291,26 +296,23 @@ void setup()
 void loop()
 {
   if (digitalRead(switchPin) == LOW) {
-  for(int i = 0; i < 6; i++)
-  {
+    angle = 0;
+    int max_light = 0;
+    int max_angle = 0;
+    for (int i = 0; i < 12; i++)
+    {
       // make a turn
-      rightMotor(255);
-      leftMotor(-255);
-      delay(250);
-      rightMotor(0);
-      leftMotor(0);
+      turn_to(60*i);
       // sense light
       photoresistor = analogRead(A0);
       if (photoresistor > max_light) {
         max_light = photoresistor;
-        break;
-      }
-      if(i == 5) { // if run out of attempts, reset max_light
-        max_light = 0;
+        max_angle = 60*i;
       }
     }
-    if(max_light > 0)
+    if (max_light > 0)
     {
+      turn_to(max_angle);
       // move forward
       rightMotor(255);
       leftMotor(255);
@@ -327,6 +329,34 @@ void loop()
     leftMotor(0);
   }
 }
+
+void turn_to(int new_angle)
+{
+  // 1 delta = 90/4 degrees = 22.5 degrees
+  delta = new_angle - angle;
+  if (delta > 0) // turn right
+  {
+    for (k = 0; k < (delta*4)/90; k++)
+    {
+      motors(MOTOR_SLOW_LEFT, -MOTOR_SLOW_RIGHT);
+      delay(MOTOR_ANGLE_DELAY);
+      motors(0, 0);
+      delay(100);
+    }
+  }
+  else if (delta < 0) // turn left
+  {
+    for (k = 0; k < -(delta*4)/90; k++)
+    {
+      motors(-MOTOR_SLOW_LEFT, MOTOR_SLOW_RIGHT);
+      delay(MOTOR_ANGLE_DELAY);
+      motors(0, 0);
+      delay(100);
+    }
+  }
+  angle = new_angle;
+}
+
 
 
 float getAvgDistance()
@@ -410,6 +440,53 @@ float getDistance()
   calcualtedDistance = echoTime / 148.0;  //calculate the distance of the object that reflected the pulse (half the bounce time multiplied by the speed of sound)
 
   return calcualtedDistance;              //send back the distance that was calculated
+}
+
+void motors(int leftMotorSpeed, int rightMotorSpeed)
+{
+  if (digitalRead(switchPin) == LOW) { //if the on switch is flipped
+    if (rightMotorSpeed > 0)                                 //if the motor should drive forward (positive speed)
+    {
+      digitalWrite(AIN1, HIGH);                         //set pin 1 to high
+      digitalWrite(AIN2, LOW);                          //set pin 2 to low
+    }
+    else if (rightMotorSpeed < 0)                            //if the motor should drive backwar (negative speed)
+    {
+      digitalWrite(AIN1, LOW);                          //set pin 1 to low
+      digitalWrite(AIN2, HIGH);                         //set pin 2 to high
+    }
+    else                                                //if the motor should stop
+    {
+      digitalWrite(AIN1, LOW);                          //set pin 1 to low
+      digitalWrite(AIN2, LOW);                          //set pin 2 to low
+    }
+
+    if (leftMotorSpeed > 0)                                 //if the motor should drive forward (positive speed)
+    {
+      digitalWrite(BIN1, HIGH);                         //set pin 1 to high
+      digitalWrite(BIN2, LOW);                          //set pin 2 to low
+    }
+    else if (leftMotorSpeed < 0)                            //if the motor should drive backwar (negative speed)
+    {
+      digitalWrite(BIN1, LOW);                          //set pin 1 to low
+      digitalWrite(BIN2, HIGH);                         //set pin 2 to high
+    }
+    else                                                //if the motor should stop
+    {
+      digitalWrite(BIN1, LOW);                          //set pin 1 to low
+      digitalWrite(BIN2, LOW);                          //set pin 2 to low
+    }
+
+    analogWrite(PWMB, abs(leftMotorSpeed));                 //now that the motor direction is set, drive it at the entered speed
+    analogWrite(PWMA, abs(rightMotorSpeed));                 //now that the motor direction is set, drive it at the entered speed
+  }
+  else
+  {
+    digitalWrite(AIN1, LOW);
+    digitalWrite(AIN2, LOW);
+    digitalWrite(BIN1, LOW);
+    digitalWrite(BIN2, LOW);
+  }
 }
 
 ```
