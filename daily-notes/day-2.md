@@ -252,6 +252,7 @@ const int BIN1 = 8;           //control pin 1 on the motor driver for the left m
 int photoresistor = 0;
 int max_light = 0;
 
+
 //distance variables
 const int trigPin = 3;
 const int echoPin = 4;
@@ -290,8 +291,8 @@ void setup()
 void loop()
 {
   if (digitalRead(switchPin) == LOW) {
-    while (1)
-    {
+  for(int i = 0; i < 6; i++)
+  {
       // make a turn
       rightMotor(255);
       leftMotor(-255);
@@ -304,15 +305,21 @@ void loop()
         max_light = photoresistor;
         break;
       }
+      if(i == 5) { // if run out of attempts, reset max_light
+        max_light = 0;
+      }
     }
-    // move forward
-    rightMotor(255);
-    leftMotor(255);
-    delay(1000);
-    rightMotor(0);
-    leftMotor(0);
-    Serial.print("Light: ");
-    Serial.println(photoresistor);
+    if(max_light > 0)
+    {
+      // move forward
+      rightMotor(255);
+      leftMotor(255);
+      delay(1000);
+      rightMotor(0);
+      leftMotor(0);
+      Serial.print("Light: ");
+      Serial.println(photoresistor);
+    }
   }
   else
   {
