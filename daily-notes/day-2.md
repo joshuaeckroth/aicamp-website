@@ -7,6 +7,7 @@ layout: note
 
 ## Robot code
 
+```
 /*
   SparkFun Inventor’s Kit
   Circuit 5C - Autonomous Robot
@@ -215,4 +216,4 @@ float getDistance()
 
   return calcualtedDistance;              //send back the distance that was calculated
 }
-
+```
