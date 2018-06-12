@@ -44,8 +44,8 @@ Before lunch:
 After lunch:
 
 - Random forests
-- Predicting bird species
 - Detecting YouTube comment spam
+- Predicting bird species
 
 ## Day 4: June 7 (Thu)
 
@@ -76,7 +76,8 @@ Before lunch:
 
 After lunch:
 
-- Easy-Bake AI presentation
+- Attacks against machine learning
+- "Easy-Bake AI" presentation
 - Post-survey of programming knowledge
 
 
