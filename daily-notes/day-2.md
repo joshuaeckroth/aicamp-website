@@ -250,6 +250,7 @@ const int BIN2 = 9;           //control pin 2 on the motor driver for the left m
 const int BIN1 = 8;           //control pin 1 on the motor driver for the left motor
 
 int photoresistor = 0;
+int max_light = 0;
 
 //distance variables
 const int trigPin = 3;
@@ -289,7 +290,6 @@ void setup()
 void loop()
 {
   if (digitalRead(switchPin) == LOW) {
-    int max_light = 0;
     while (1)
     {
       // make a turn
