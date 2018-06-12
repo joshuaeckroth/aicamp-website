@@ -314,6 +314,11 @@ void loop()
     Serial.print("Light: ");
     Serial.println(photoresistor);
   }
+  else
+  {
+    rightMotor(0);
+    leftMotor(0);
+  }
 }
 
 
@@ -399,4 +404,5 @@ float getDistance()
 
   return calcualtedDistance;              //send back the distance that was calculated
 }
+
 ```
